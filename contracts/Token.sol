@@ -41,7 +41,7 @@ contract Token {
     {
         require(balanceOf[msg.sender] >= _value);
 
-         _transfer(msg.sender, _to, _value);
+        _transfer(msg.sender, _to, _value);
 
         return true;
     }
@@ -64,7 +64,6 @@ contract Token {
         returns(bool success)
     {
         require(_spender != address(0));
-   
 
         allowance[msg.sender][_spender] = _value;
 
@@ -73,25 +72,21 @@ contract Token {
     }
 
     function transferFrom(
-        address _from, 
-        address _to, 
+        address _from,
+        address _to,
         uint256 _value
-    )   
-        public 
-        returns (bool success) 
-          
+    )
+        public
+        returns (bool success)
     {
-       
-        require(_value <= balanceOf[_from], "insufficient balance");
-        require(_value <= allowance[_from][msg.sender], 'insufficient allowance');
+        require(_value <= balanceOf[_from]);
+        require(_value <= allowance[_from][msg.sender]);
 
-       
         allowance[_from][msg.sender] = allowance[_from][msg.sender] - _value;
 
-        
         _transfer(_from, _to, _value);
-         return true;
 
+        return true;
     }
 
 }

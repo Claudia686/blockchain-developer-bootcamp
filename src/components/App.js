@@ -7,33 +7,40 @@ import {
   loadNetwork,
   loadAccount,
   loadTokens,
-  loadExchange,
+  loadExchange
 } from '../store/interactions';
+
+import Navbar from './Navbar'
 
 function App() {
   const dispatch = useDispatch()
 
   const loadBlockchainData = async () => {
-     // Connect Ethers to blockchain
+    // Connect Ethers to blockchain
     const provider = loadProvider(dispatch)
 
-    // Fetch current network's chainId (e.g. hardhat: 31337, kovan: 42 )
+    // Fetch current network's chainId (e.g. hardhat: 31337, kovan: 42)
     const chainId = await loadNetwork(provider, dispatch)
 
-   // Fetch current account & blance from Metamask
-   await loadAccount(provider, dispatch)
+    // Reload page when network changes
+    window.ethereum.on('chainChanged', () => {
+      window.location.reload()
+    })
 
-    // Load token smart contract
+    // Fetch current account & balance from Metamask when changed
+    window.ethereum.on('accountsChanged', () => {
+      loadAccount(provider, dispatch)
+    })
+
+    // Load token smart contracts
     const DApp = config[chainId].DApp
     const mETH = config[chainId].mETH
     await loadTokens(provider, [DApp.address, mETH.address], dispatch)
-  
-   // Load exchange smart contract
+
+    // Load exchange smart contract
     const exchangeConfig = config[chainId].exchange
     await loadExchange(provider, exchangeConfig.address, dispatch)
-    
   }
-
 
   useEffect(() => {
     loadBlockchainData()
@@ -42,7 +49,7 @@ function App() {
   return (
     <div>
 
-      {/* Navbar */}
+      <Navbar />
 
       <main className='exchange grid'>
         <section className='exchange__section--left grid'>
